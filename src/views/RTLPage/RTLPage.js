@@ -21,7 +21,7 @@ import Cloud from "@material-ui/icons/Cloud";
 import Button from "components/CustomButtons/Button.js";
 import GridItem from "components/Grid/GridItem.js";
 import GridContainer from "components/Grid/GridContainer.js";
-import Table from "components/Table/Table.js";
+
 import Tasks from "components/Tasks/Tasks.js";
 import CustomTabs from "components/CustomTabs/CustomTabs.js";
 import Danger from "components/Typography/Danger.js";
@@ -270,16 +270,7 @@ export default function RTLPage() {
               </p>
             </CardHeader>
             <CardBody>
-              <Table
-                tableHeaderColor="warning"
-                tableHead={["کد", "نام", "حقوق", "استان"]}
-                tableData={[
-                  ["1", "احمد حسینی	", "$36,738", "مازندران"],
-                  ["2", "مینا رضایی	", "$23,789", "گلستان"],
-                  ["3", "مبینا احمدپور	", "$56,142", "تهران"],
-                  ["4", "جلال آقایی	", "$38,735", "شهرکرد"]
-                ]}
-              />
+           
             </CardBody>
           </Card>
         </GridItem>

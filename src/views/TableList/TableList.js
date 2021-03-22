@@ -4,11 +4,11 @@ import { makeStyles } from "@material-ui/core/styles";
 // core components
 import GridItem from "components/Grid/GridItem.js";
 import GridContainer from "components/Grid/GridContainer.js";
-import Table from "components/Table/Table.js";
+
 import Card from "components/Card/Card.js";
 import CardHeader from "components/Card/CardHeader.js";
 import CardBody from "components/Card/CardBody.js";
-
+import TableEncuestas from "../../components/Table/TableEncuestas"
 
 import firebase from 'firebase/app';
 import "firebase/firestore";
@@ -61,14 +61,13 @@ export default function TableList() {
     .collection("encuestas")
     .get()
     .then((response) => {
-      const encuesta =[];
-      response.forEach((doc)=>{       
-        encuesta.push(doc.data());
-        
-        console.log("encuesta", doc.data());
-       
+      const encuestas =[];
+      response.forEach((doc)=>{  
+        let encuesta = doc.data()
+        encuesta.id=doc.id     
+        encuestas.push(encuesta);  
     });
-      setData([...encuesta])
+      setData(encuestas)
     })
     .catch((err ) => {
       console.log(err);
@@ -91,7 +90,7 @@ export default function TableList() {
             </p>
           </CardHeader>
           <CardBody>
-          /* */
+          <TableEncuestas rows={data}  />
           </CardBody>
         </Card>
       </GridItem>
