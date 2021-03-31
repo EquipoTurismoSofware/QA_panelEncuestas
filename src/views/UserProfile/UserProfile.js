@@ -58,7 +58,8 @@ export default function UserProfile() {
     console.log("VERRRR");
 
     dbF
-    .collection("users")
+   .collection("users").where("email", "==" , "juli@gmail.com")
+
     .get()
     .then((response) => {
       const users =[];
@@ -78,22 +79,8 @@ export default function UserProfile() {
     );
   },[]);
    
-  return (
-  
+  return (  
     <div>
-      {data.length ? (
-        data.map(user => (
-          <article key={user.id}>
-            <h2>{user.name}</h2>
-            <h3>{user.email}</h3>
-            <p>{user.dni}</p>
-          </article>
-        ))
-      ) : (
-        <p>No hay usu.</p>
-      )}
-    
-
       <GridContainer>
         <GridItem xs={12} sm={12} md={8}>
           <Card>
@@ -105,7 +92,7 @@ export default function UserProfile() {
               <GridContainer>
                 <GridItem xs={12} sm={12} md={5}>
                   <CustomInput
-                    labelText="Institucion"
+                    labelText="Secretaria de Turismo"
                     id="company-disabled"
                     formControlProps={{
                       fullWidth: true
@@ -134,17 +121,40 @@ export default function UserProfile() {
                 </GridItem>
                 
                 <GridItem xs={12} sm={12} md={4}>
+                {data.length ? (
+                 data.map(user => (
                   <CustomInput
-                    labelText="Email"
+                   key={user.id}
+                    labelText={user.email}
                     id="email-address"
                     formControlProps={{
                       fullWidth: true
                     }}
                   />
+                  )  )):
+                  (
+                    <p>{"  "}</p>)
+                }
+
                 </GridItem>
               </GridContainer>
               <GridContainer>
-                <GridItem xs={12} sm={12} md={6}>
+              <GridItem xs={12} sm={12} md={4}>
+              {data.length ? (
+                 data.map(user => (
+                  <CustomInput
+                    labelText={user.dni}
+                    id="DNI"
+                    formControlProps={{
+                      fullWidth: true
+                    }}
+                    />
+                    )  )):
+                    (
+                      <p>{"  "}</p>)
+                  }
+                </GridItem>
+                <GridItem xs={12} sm={12} md={4}>
                   <CustomInput
                     labelText="Nombre"
                     id="first-name"
@@ -153,7 +163,7 @@ export default function UserProfile() {
                     }}
                   />
                 </GridItem>
-                <GridItem xs={12} sm={12} md={6}>
+                <GridItem xs={12} sm={12} md={4}>
                   <CustomInput
                     labelText="Apellido"
                     id="last-name"
