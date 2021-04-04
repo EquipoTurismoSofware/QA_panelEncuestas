@@ -19,7 +19,18 @@ import Tooltip from "@material-ui/core/Tooltip";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
 import DeleteIcon from "@material-ui/icons/Delete";
-import FilterListIcon from "@material-ui/icons/FilterList";
+import EditIcon from '@material-ui/icons/Edit';
+import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import EditEncuesta from "../Encuestas/EditEncuesta"
+
+
+// core components
+import CustomInput from "components/CustomInput/CustomInput.js";
 
 
 function descendingComparator(a, b, orderBy) {
@@ -58,7 +69,7 @@ const headCells = [
   { id: "n_razonempresa", numeric: true, disablePadding: false, label: "Nombre o razon social" },
   { id: "domicilio", numeric: true, disablePadding: false, label: "Direccion" },
   { id: "name", numeric: true, disablePadding: false, label: "Encuestador" },
-  
+
 ];
 
 function EnhancedTableHead(props) {
@@ -70,6 +81,7 @@ function EnhancedTableHead(props) {
     numSelected,
     rowCount,
     onRequestSort,
+    search
   } = props;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
@@ -78,13 +90,29 @@ function EnhancedTableHead(props) {
   return (
     <TableHead>
       <TableRow>
-        <TableCell padding="checkbox">
-          <Checkbox
-            indeterminate={numSelected > 0 && numSelected < rowCount}
-            checked={rowCount > 0 && numSelected === rowCount}
-            onChange={onSelectAllClick}
-            inputProps={{ "aria-label": "select all desserts" }}
-          />
+        <TableCell padding="checkbox" >
+
+          <div style={{
+            border: "1px",
+            display: "inline-block",
+
+
+          }}>
+            <Checkbox
+              indeterminate={numSelected > 0 && numSelected < rowCount}
+              checked={rowCount > 0 && numSelected === rowCount}
+              onChange={onSelectAllClick}
+              inputProps={{ "aria-label": "select all desserts" }}
+
+              disabled={search !== "" ? false : true}
+
+            />
+
+            <IconButton aria-label="Editar" style={{}}>
+              <EditIcon />
+            </IconButton>
+          </div>
+
         </TableCell>
         {headCells.map((headCell) => (
           <TableCell
@@ -107,8 +135,9 @@ function EnhancedTableHead(props) {
             </TableSortLabel>
           </TableCell>
         ))}
+
       </TableRow>
-    </TableHead>
+    </TableHead >
   );
 }
 
@@ -130,21 +159,33 @@ const useToolbarStyles = makeStyles((theme) => ({
   highlight:
     theme.palette.type === "light"
       ? {
-          color: theme.palette.secondary.main,
-          backgroundColor: lighten(theme.palette.secondary.light, 0.85),
-        }
+        color: theme.palette.secondary.main,
+        backgroundColor: lighten(theme.palette.secondary.light, 0.85),
+      }
       : {
-          color: theme.palette.text.primary,
-          backgroundColor: theme.palette.secondary.dark,
-        },
+        color: theme.palette.text.primary,
+        backgroundColor: theme.palette.secondary.dark,
+      },
   title: {
     flex: "1 1 100%",
   },
 }));
 
 const EnhancedTableToolbar = (props) => {
+
   const classes = useToolbarStyles();
-  const { numSelected } = props;
+  const { deleteEncuestas, selectedId } = props
+  const { numSelected, setSelected } = props;
+
+  const [open, setOpen] = React.useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   return (
     <Toolbar
@@ -152,6 +193,30 @@ const EnhancedTableToolbar = (props) => {
         [classes.highlight]: numSelected > 0,
       })}
     >
+      <div>
+
+        <Dialog
+          open={open}
+          onClose={handleClose}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">{"Eliminar"}</DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              ¿Estas seguro que deseas eliminar los filas seleccionadas?
+          </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose} color="primary">
+              Cancelar
+          </Button>
+            <Button onClick={() => { handleClose(); deleteEncuestas(selectedId); }} color="primary" autoFocus>
+              Aceptar
+          </Button>
+          </DialogActions>
+        </Dialog>
+      </div>
       {numSelected > 0 ? (
         <Typography
           className={classes.title}
@@ -168,13 +233,13 @@ const EnhancedTableToolbar = (props) => {
           id="tableTitle"
           component="div"
         >
-          Nutrition
+          Encuestas
         </Typography>
       )}
 
       {numSelected > 0 ? (
         <Tooltip title="Delete">
-          <IconButton aria-label="delete">
+          <IconButton aria-label="delete" onClick={handleClickOpen}>
             <DeleteIcon />
           </IconButton>
         </Tooltip>
@@ -216,14 +281,21 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function TableEncuestas(props) {
-  const {rows} = props
+  const { deleteEncuestas, rows, setSearch, search, reloadTable, reload } = props
   const classes = useStyles();
+  const [encuesta, setEncuesta] = React.useState(null)
+  const [openEdit, setOpenEdit] = React.useState(false)
   const [order, setOrder] = React.useState("asc");
   const [orderBy, setOrderBy] = React.useState("calories");
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [selectedId, setSelectedId] = React.useState([])
+
+
+
+
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === "asc";
@@ -233,30 +305,45 @@ export default function TableEncuestas(props) {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = rows.map((n) => n.name);
+      const newSelecteds = rows.map((n) => n.nombre_fantasia);
+
       setSelected(newSelecteds);
       return;
     }
     setSelected([]);
   };
 
-  const handleClick = (event, name) => {
+
+
+  const handleClick = (event, name, id) => {
     const selectedIndex = selected.indexOf(name);
+
     let newSelected = [];
+    let newId = []
 
     if (selectedIndex === -1) {
       newSelected = newSelected.concat(selected, name);
+      newId = newId.concat(selectedId, id);
     } else if (selectedIndex === 0) {
       newSelected = newSelected.concat(selected.slice(1));
+      newId = newId.concat(selectedId.slice(1));
     } else if (selectedIndex === selected.length - 1) {
       newSelected = newSelected.concat(selected.slice(0, -1));
+      newId = newId.concat(selectedId.slice(0, -1));
     } else if (selectedIndex > 0) {
       newSelected = newSelected.concat(
         selected.slice(0, selectedIndex),
         selected.slice(selectedIndex + 1)
+
+      );
+      newId = newId.concat(
+        selectedId.slice(0, selectedIndex),
+        selectedId.slice(selectedIndex + 1)
+
       );
     }
 
+    setSelectedId(newId)
     setSelected(newSelected);
   };
 
@@ -268,7 +355,9 @@ export default function TableEncuestas(props) {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
-
+  const handleOpenEdit = () => {
+    setOpenEdit(!openEdit)
+  }
   const handleChangeDense = (event) => {
     setDense(event.target.checked);
   };
@@ -280,8 +369,26 @@ export default function TableEncuestas(props) {
 
   return (
     <div className={classes.root}>
+      <div className={classes.searchWrapper}>
+        <CustomInput
+
+          formControlProps={{
+            className: classes.margin + " " + classes.search
+          }}
+          inputProps={{
+            onChange: (event) => setSearch(event.target.value),
+            placeholder: "Buscar",
+            inputProps: {
+              "aria-label": "Search"
+            }
+          }}
+
+        />
+
+
+      </div>
       <Paper className={classes.paper}>
-        <EnhancedTableToolbar numSelected={selected.length} />
+        <EnhancedTableToolbar numSelected={selected.length} deleteEncuestas={deleteEncuestas} selectedId={selectedId} setSelected={setSelected} />
         <TableContainer>
           <Table
             className={classes.table}
@@ -296,30 +403,44 @@ export default function TableEncuestas(props) {
               orderBy={orderBy}
               onSelectAllClick={handleSelectAllClick}
               onRequestSort={handleRequestSort}
+              search={search}
               rowCount={rows.length}
             />
             <TableBody>
               {stableSort(rows, getComparator(order, orderBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
-                  const isItemSelected = isSelected(row.name);
+                  const isItemSelected = isSelected(row.nombre_fantasia);
                   const labelId = `enhanced-table-checkbox-${index}`;
 
                   return (
                     <TableRow
                       hover
-                      onClick={(event) => handleClick(event, row.name)}
+
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
                       key={row.nombre_fantasia}
                       selected={isItemSelected}
                     >
-                      <TableCell padding="checkbox">
-                        <Checkbox
-                          checked={isItemSelected}
-                          inputProps={{ "aria-labelledby": labelId }}
-                        />
+                      <TableCell padding="checkbox" style={{ width: "15%", marginRight: "10%" }}>
+                        <div style={{
+                          border: "1px",
+                          display: "inline-block",
+
+
+                        }}>
+
+                          <Checkbox
+                            checked={isItemSelected}
+                            inputProps={{ "aria-labelledby": labelId }}
+                            onClick={(event) => handleClick(event, row.nombre_fantasia, row.id)}
+                          />
+                          <IconButton aria-label="Editar" onClick={() => { setEncuesta(row); handleOpenEdit() }} >
+                            <EditIcon />
+                          </IconButton>
+                        </div>
+
                       </TableCell>
                       <TableCell
                         component="th"
@@ -332,7 +453,7 @@ export default function TableEncuestas(props) {
                       <TableCell align="right">{row.n_razonempresa}</TableCell>
                       <TableCell align="right">{row.domicilio}</TableCell>
                       <TableCell align="right">{row.name}</TableCell>
-                      
+
                     </TableRow>
                   );
                 })}
@@ -358,6 +479,8 @@ export default function TableEncuestas(props) {
         control={<Switch checked={dense} onChange={handleChangeDense} />}
         label="Dense padding"
       />
+      {openEdit && <EditEncuesta setOpen={setOpenEdit} encuesta={encuesta} reloadTable={reloadTable} reload={reload} />}
+
     </div>
   );
 }

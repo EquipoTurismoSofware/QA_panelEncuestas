@@ -1,10 +1,9 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 // @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles";
 // core components
 import GridItem from "components/Grid/GridItem.js";
 import GridContainer from "components/Grid/GridContainer.js";
-
 import Card from "components/Card/Card.js";
 import CardHeader from "components/Card/CardHeader.js";
 import CardBody from "components/Card/CardBody.js";
@@ -51,32 +50,66 @@ const dbF = firebase.firestore(firebaseApp);
 
 export default function TableList() {
   const classes = useStyles();
+  const [search, setSearch] = React.useState("")
+  const [data, setData] = useState([]);
+  const [dataReturn, setDataReturn] = useState([]);
+  const [isDeleteEncuestas, setIdDeleteEncuestas] = useState(false);
+  const [isLoading, setIsLoading] = useState(false)
+  useEffect(() => {
 
-  const [data, setData]= useState([]);
 
-  useEffect(()=>{
-    console.log("VERRRR");
-  
     dbF
-    .collection("encuestas")
-    .get()
-    .then((response) => {
-      const encuestas =[];
-      response.forEach((doc)=>{  
-        let encuesta = doc.data()
-        encuesta.id=doc.id     
-        encuestas.push(encuesta);  
-    });
-      setData(encuestas)
-    })
-    .catch((err ) => {
-      console.log(err);
-  
+      .collection("encuestas")
+      .get()
+      .then((response) => {
+        const encuestas = [];
+        response.forEach((doc) => {
+          let encuesta = doc.data()
+          encuesta.id = doc.id
+          encuestas.push(encuesta);
+        });
+        setData(encuestas)
+        setDataReturn(encuestas)
+        setIsLoading(true)
+      })
+      .catch((err) => {
+        console.log(err);
+
+      }
+
+      );
+  }, [isDeleteEncuestas])
+
+  useEffect(() => {
+
+    if (search !== "") {
+      const rowArray = [];
+      data.forEach((enc) => {
+        if (
+          enc.nombre_fantasia.toLocaleUpperCase().includes(search.toLocaleUpperCase()) ||
+          enc.n_razonempresa.toLocaleUpperCase().includes(search.toLocaleUpperCase()) || enc.domicilio.toLocaleUpperCase().includes(search.toLocaleUpperCase()) || enc.name.toLocaleUpperCase().includes(search.toLocaleUpperCase())) {
+          rowArray.push(enc);
+
+        }
+      });
+
+      setDataReturn(rowArray);
+    } else if (search === "") {
+      setDataReturn(data)
     }
-    
-    );
-  },[]);
-  /* ojo */
+  }, [search]);
+
+  const deleteEncuestas = (encuestasId) => {
+    setIsLoading(false)
+    encuestasId.map((id) => {
+      dbF.collection("encuestas").doc(id).delete().then(() => {
+        console.log("Borrado")
+
+      }).catch((err) => { console.log(err); })
+    })
+    setIdDeleteEncuestas(!isDeleteEncuestas)
+  }
+
   return (
     <GridContainer>
       <GridItem xs={12} sm={12} md={12}>
@@ -90,7 +123,8 @@ export default function TableList() {
             </p>
           </CardHeader>
           <CardBody>
-          <TableEncuestas rows={data}  />
+            <TableEncuestas rows={dataReturn} deleteEncuestas={deleteEncuestas} reloadTable={setIdDeleteEncuestas} reload={isDeleteEncuestas} isLoading={isLoading} setSearch={setSearch} search={search} />
+
           </CardBody>
         </Card>
       </GridItem>
