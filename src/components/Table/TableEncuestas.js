@@ -211,7 +211,7 @@ const EnhancedTableToolbar = (props) => {
             <Button onClick={handleClose} color="primary">
               Cancelar
           </Button>
-            <Button onClick={() => { handleClose(); deleteEncuestas(selectedId); }} color="primary" autoFocus>
+            <Button onClick={() => { handleClose(); deleteEncuestas(selectedId); setSelected([]) }} color="primary" autoFocus>
               Aceptar
           </Button>
           </DialogActions>
