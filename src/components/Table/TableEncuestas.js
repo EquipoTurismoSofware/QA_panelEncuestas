@@ -305,7 +305,7 @@ export default function TableEncuestas(props) {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = rows.map((n) => n.nombre_fantasia);
+      const newSelecteds = rows.map((n) => n.id);
 
       setSelected(newSelecteds);
       return;
