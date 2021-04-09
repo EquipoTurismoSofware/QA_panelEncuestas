@@ -60,22 +60,23 @@ const dbF = firebase.firestore(firebaseApp);
 export default function Dashboard() {
 
   const classes = useStyles();
+  
 
   useEffect(()=>{
-    console.log("VERRRR");
-
-    dbF
+    
+     dbF
     .collection("users")
     .get()
     .then((response) => {
      
       response.forEach((doc)=>{          
-        console.log("USU", doc.data());
+        //console.log("USU",doc.data());
+     
     })
     })
     .catch((err ) => {
       console.log(err);
-
+     
     }
     
     );
@@ -243,6 +244,7 @@ export default function Dashboard() {
           </Card>
         </GridItem>
       </GridContainer>
+      
     </div>
   );
 }

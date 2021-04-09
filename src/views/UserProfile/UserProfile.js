@@ -58,7 +58,7 @@ export default function UserProfile() {
     console.log("VERRRR");
 
     dbF
-   .collection("users").where("email", "==" , "juli@gmail.com")
+   .collection("users").where("emailEncuestador", "==" , "juli@gmail.com")
 
     .get()
     .then((response) => {
