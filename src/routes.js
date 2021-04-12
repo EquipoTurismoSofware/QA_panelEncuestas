@@ -63,14 +63,14 @@ const dashboardRoutes = [
     component: Maps,
     layout: "/admin"
   },
-  {
+  /*{
     path: "/notifications",
     name: "Notifications",
     icon: Notifications,
     component: NotificationsPage,
     layout: "/admin"
   },
-  /*{
+  {
     path: "/rtl-page",
     name: "RTL Support",
     rtlName: "پشتیبانی از راست به چپ",
