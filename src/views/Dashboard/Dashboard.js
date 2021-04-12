@@ -1,23 +1,16 @@
-import React,{ useEffect } from "react";
-
+import React, { useEffect, useState } from "react";
+import firebase from 'firebase/app';
+import "firebase/firestore";
+import { firebaseApp } from "../../utils/firebase"
+import styles from "assets/jss/material-dashboard-react/views/dashboardStyle.js";
 // react plugin for creating charts
 import ChartistGraph from "react-chartist";
-
+import { DataDashBoard } from "../../components/Dashboard/DashboardList"
 // @material-ui/core
 import { makeStyles } from "@material-ui/core/styles";
 import Icon from "@material-ui/core/Icon";
 // @material-ui/icons
-import Store from "@material-ui/icons/Store";
-import Warning from "@material-ui/icons/Warning";
-import DateRange from "@material-ui/icons/DateRange";
-import LocalOffer from "@material-ui/icons/LocalOffer";
-import Update from "@material-ui/icons/Update";
-import ArrowUpward from "@material-ui/icons/ArrowUpward";
-import AccessTime from "@material-ui/icons/AccessTime";
-import Accessibility from "@material-ui/icons/Accessibility";
-import BugReport from "@material-ui/icons/BugReport";
-import Code from "@material-ui/icons/Code";
-import Cloud from "@material-ui/icons/Cloud";
+
 // core components
 import GridItem from "components/Grid/GridItem.js";
 import GridContainer from "components/Grid/GridContainer.js";
@@ -30,6 +23,8 @@ import CardHeader from "components/Card/CardHeader.js";
 import CardIcon from "components/Card/CardIcon.js";
 import CardBody from "components/Card/CardBody.js";
 import CardFooter from "components/Card/CardFooter.js";
+import "react-responsive-carousel/lib/styles/carousel.min.css";
+import { Carousel } from 'react-responsive-carousel';
 
 import { bugs, website, server } from "variables/general.js";
 
@@ -40,113 +35,117 @@ import {
 } from "variables/charts.js";
 
 
-
-
-import firebase from 'firebase/app';
-import "firebase/firestore";
-import { firebaseApp } from "../../utils/firebase"
-
-
-import styles from "assets/jss/material-dashboard-react/views/dashboardStyle.js";
-
-const useStyles = makeStyles(styles);
-
-
 const dbF = firebase.firestore(firebaseApp);
 
 
 
 
+
+
+const useStyles = makeStyles(styles);
+
+
+
+
+
+
+
 export default function Dashboard() {
+  const [tipo_count, setTipo_Count] = useState(null)
+  const [dataDash, setDataDash] = useState(null)
 
   const classes = useStyles();
+  const estilos = misClases()
+  useEffect(() => {
+    const tipo_cantidad = [];
 
-  useEffect(()=>{
-    console.log("VERRRR");
 
-    dbF
-    .collection("users")
-    .get()
-    .then((response) => {
-     
-      response.forEach((doc)=>{          
-        console.log("USU", doc.data());
+    dbF.collection("tipo_cantidad").get().then((response) => {
+      response.forEach((doc) => {
+
+        tipo_cantidad.push(doc.data())
+
+      });
+
+      setTipo_Count(tipo_cantidad)
     })
-    })
-    .catch((err ) => {
-      console.log(err);
 
+
+
+
+  }, [])
+
+  useEffect(() => {
+    if (tipo_count) {
+      setDataDash(DataDashBoard(tipo_count))
     }
-    
-    );
-  },[])
-   
+
+  }, [tipo_count])
+
+  if (dataDash)
+    dataDash.map((items) => {
+      items.map((item) => {
+        console.log(item)
+      })
+    })
 
   return (
     <div>
-      <GridContainer>
-        <GridItem xs={12} sm={6} md={3}>
-          <Card>
-            <CardHeader color="warning" stats icon>
-              <CardIcon color="warning">
-                <Icon>content_copy</Icon>
-              </CardIcon>
-              <p className={classes.cardCategory}>Cabañas</p>
-              <h3 className={classes.cardTitle}>
-                 <small>34,245   </small>
-              </h3>
-            </CardHeader>
-            <CardFooter stats>
-              <div className={classes.stats}>
-                <Danger>
-                 
-                </Danger>
-               
-              </div>
-            </CardFooter>
-          </Card>
-        </GridItem>
-        <GridItem xs={12} sm={6} md={3}>
-          <Card>
-            <CardHeader color="success" stats icon>
-              <CardIcon color="success">
-                <Store />
-              </CardIcon>
-              <p className={classes.cardCategory}>Complejos</p>
-              <h3 className={classes.cardTitle}>$34,245</h3>
-            </CardHeader>
-            <CardFooter stats>
-              <div className={classes.stats}>
-                <DateRange />
-                Last 24 Hours
-              </div>
-            </CardFooter>
-          </Card>
-        </GridItem>
-        <GridItem xs={12} sm={6} md={3}>
-          <Card>
-            <CardHeader color="danger" stats icon>
-              <CardIcon color="danger">
-                <Icon>info_outline</Icon>
-              </CardIcon>
-              <p className={classes.cardCategory}>Departamentos</p>
-              <h3 className={classes.cardTitle}>75</h3>
-            </CardHeader>
-            <CardFooter stats>
-              <div className={classes.stats}>
-                <LocalOffer />
-                Tracked from Github
-              </div>
-            </CardFooter>
-          </Card>
-        </GridItem>
+      {dataDash && <Carousel infiniteLoop={true} autoPlay={true} interval={2000} stopOnHover={true}>
+
+        {
+          dataDash.map((items) => {
+            return <div>
+              <GridContainer>
+                {items.map((item) => {
+                  return <GridItem xs={12} sm={6} md={3}>
+                    <Card>
+                      <CardHeader color="warning" stats icon>
+                        <CardIcon color="warning">
+                          {item.icono}
+                        </CardIcon>
+                        <p className={classes.cardCategory}>{item.tipo}</p>
+                        <h3 className={classes.cardTitle}>
+                          <small>{item.cantidad}   </small>
+                        </h3>
+                      </CardHeader>
+                      <CardFooter stats>
+                        <div className={classes.stats}>
+                          <Danger>
+
+                          </Danger>
+
+                        </div>
+                      </CardFooter>
+                    </Card>
+                  </GridItem>
+                })}
+              </GridContainer>
+            </div>
+          })
+        }
+
+
+
+
+
+
+
+
+      </Carousel>}
+
+
+      {/* <GridContainer>
+
+
+ 
         <GridItem xs={12} sm={6} md={3}>
           <Card>
             <CardHeader color="info" stats icon>
               <CardIcon color="info">
-                <Accessibility />
+                <AccessibilityIcon />
               </CardIcon>
-              <p className={classes.cardCategory}>Hospedajes</p>
+              <p className={classes.cardCategory}>Posadas</p>
               <h3 className={classes.cardTitle}>+245</h3>
             </CardHeader>
             <CardFooter stats>
@@ -157,8 +156,10 @@ export default function Dashboard() {
             </CardFooter>
           </Card>
         </GridItem>
-      </GridContainer>
-      <GridContainer>
+      </GridContainer> */}
+
+
+      {/* <GridContainer>
         <GridItem xs={12} sm={12} md={4}>
           <Card chart>
             <CardHeader color="success">
@@ -175,7 +176,7 @@ export default function Dashboard() {
               <p className={classes.cardCategory}>
                 <span className={classes.successText}>
                   <ArrowUpward className={classes.upArrowCardCategory} /> 55%
-                </span>{" "}
+                </span>
                 increase in today sales.
               </p>
             </CardBody>
@@ -222,7 +223,7 @@ export default function Dashboard() {
             </CardHeader>
 
             <CardBody>
-             <h4 className={classes.cardTitle}> Tipo de Alojamientos </h4>
+              <h4 className={classes.cardTitle}> Tipo de Alojamientos </h4>
               <p className={classes.cardCategory}>Last Campaign Performance</p>
             </CardBody>
             <CardFooter chart>
@@ -232,17 +233,37 @@ export default function Dashboard() {
             </CardFooter>
           </Card>
         </GridItem>
-      </GridContainer>
+      </GridContainer> */}
       <GridContainer>
-          <GridItem xs={12} sm={12} md={6}>
-         
+        <GridItem xs={12} sm={12} md={6}>
+
         </GridItem>
         <GridItem xs={12} sm={12} md={6}>
           <Card>
-            
+
           </Card>
         </GridItem>
       </GridContainer>
-    </div>
+    </div >
   );
 }
+
+const misClases = makeStyles((theme) => ({
+  hosteria: {
+    float: "left",
+    padding: "15px",
+    marginTop: "-20px",
+    marginRight: "15px",
+    borderRadius: "3px",
+    backgroundColor: "blue",
+
+  },
+  hotel: {
+    float: "left",
+    padding: "15px",
+    marginTop: "-20px",
+    marginRight: "15px",
+    borderRadius: "3px",
+    backgroundColor: "#7B963C",
+  }
+}));

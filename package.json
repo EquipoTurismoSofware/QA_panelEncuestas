@@ -25,6 +25,7 @@
     "react-dom": "16.13.1",
     "react-google-maps": "9.4.5",
     "react-loading": "^2.0.3",
+    "react-responsive-carousel": "^3.2.18",
     "react-router-dom": "5.2.0",
     "react-scripts": "3.4.1",
     "react-swipeable-views": "0.13.9"
