@@ -1,0 +1,59 @@
+.icon {
+    float: left;
+    padding: 15px;
+    margin-top: -20px;
+    margin-right: 15px;
+    border-radius: 3px;
+}
+
+.cabañas{background-color:#3F2612}
+.hostel {
+    background-color:#939391
+}
+.complejo{
+    background-color:#97EE33
+}
+.hospedaje {
+    background-color:#5464A3
+}
+.hotel-boutique {
+    background-color:#C9E152
+}
+.rural {
+    background-color:#0C9600
+}
+.complejo-turístico {
+    background-color:#0564C5
+}
+.hosteria {
+
+    background-color: blue;
+
+  }
+  .hotel {
+    background-color:#7B963C;
+  }
+  .bungalows{
+      background-color:#6F6843
+  }
+  .apar-hotel{
+      background-color:#DA362C
+  }
+  .resort {
+    background-color:#3AF76F
+  }
+  .bed-and-break-fast{
+      background-color:#F69C01
+  }
+  .hostal {
+      background-color:#E2D9CB
+  }
+  .posada {
+      background-color:#927137
+  }
+  .departamento {
+      background-color: #555453;
+  }
+  .residencial {
+      background-color:#2A9B3A
+  }

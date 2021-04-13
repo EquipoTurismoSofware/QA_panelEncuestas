@@ -28,7 +28,11 @@ const dbF = firebase.firestore(firebaseApp);
 //hotel boutique
 const iconos = [<Icon>house_icon</Icon>, <BusinessIcon />, <ApartmentIcon />, <AccessibilityIcon />, <GroupIcon />, <DeckIcon />, <LocalHotelIcon />, <AccessibilityIcon />, <PetsIcon />, <DesktopAccessDisabledIcon />, <CasinoOutlinedIcon />, <KingBedOutlinedIcon />, <SingleBedOutlinedIcon />, <LocalHotelOutlinedIcon />, <FastfoodOutlinedIcon />, <CasinoOutlinedIcon />, <AirlineSeatFlatOutlinedIcon />, <HomeWorkOutlinedIcon />]
 
+const clases = ["cabaña", "hostel", "complejo", "hospedaje"]
+
 export const DataDashBoard = (tipo_cantidad) => {
+    // deleteDatos()
+    // crearDatos()
     var cont = 0;
     const array = []
     const data = tipo_cantidad.sort((a, b) => {
@@ -41,7 +45,7 @@ export const DataDashBoard = (tipo_cantidad) => {
         return { ...item, icono: iconos[index] }
     })
 
-    console.log(data.length)
+
     while (cont < data.length) {
 
         array.push(data.slice(cont, cont + 4))
@@ -51,32 +55,62 @@ export const DataDashBoard = (tipo_cantidad) => {
 
 }
 
-const crearDatos = () => {
-
-    ItemsTipo2.map((item, index) => {
-
-        dbF
-            .collection("encuestas")
-            .where("tipo_establecimiento", "==", item)
-            .get()
-            .then((response) => {
-
-                let dato = { "tipo": item, "cantidad": response.docs.length }
-                dbF
-                    .collection("tipo_cantidad")
-                    .add(dato)
-                    .then(() => { })
-                    .catch((err) => {
-                        console.log(err)
-                    });
-
+export const ActualizarDatos = new Promise((resolve, reject) => {
+    let finish = true
+    dbF
+        .collection("tipo_cantidad")
+        .get()
+        .then((response) => {
+            response.forEach((doc) => {
+                dbF.collection("tipo_cantidad").doc(doc.id).delete().then(() => { }).catch((err) => {
+                    return false
+                })
             })
-            .catch((err) => {
-                console.log(err);
+            var re = new RegExp('\\s', 'g');
 
-            }
+            ItemsTipo2.map((item, index) => {
 
-            );
+                dbF
+                    .collection("encuestas")
+                    .where("tipo_establecimiento", "==", item)
+                    .get()
+                    .then((response) => {
 
-    })
-}
+                        let dato = { "tipo": item, "cantidad": response.docs.length, clase: `icon ${item.toLowerCase().replace(re, "-")}` }
+                        dbF
+                            .collection("tipo_cantidad")
+                            .add(dato)
+                            .then(() => { })
+                            .catch((err) => {
+                                return false
+                            });
+
+                    })
+                    .catch((err) => {
+
+                        return false
+                    }
+
+                    );
+                return false
+            })
+
+
+            // if (finish) {
+            //     resolve(finish)
+            // }
+            // else {
+            //     reject(finish)
+            // }
+
+        })
+        .catch((err) => {
+            return false
+
+        }) ? resolve(false) : reject(false)
+
+
+
+})
+
+
