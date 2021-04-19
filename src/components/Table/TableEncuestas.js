@@ -27,7 +27,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import EditEncuesta from "../Encuestas/EditEncuesta"
-
+import ExportForExcel from "../../components/Excel/ExportForExcel"
 
 // core components
 import CustomInput from "components/CustomInput/CustomInput.js";
@@ -69,6 +69,7 @@ const headCells = [
   { id: "n_razonempresa", numeric: true, disablePadding: false, label: "Nombre o razon social" },
   { id: "domicilio", numeric: true, disablePadding: false, label: "Direccion" },
   { id: "name", numeric: true, disablePadding: false, label: "Encuestador" },
+  { id: "dni", numeric: true, disablePadding: false, label: "DNI Encuestador" },
 
 ];
 
@@ -248,6 +249,7 @@ const EnhancedTableToolbar = (props) => {
           <IconButton aria-label="filter list"></IconButton>
         </Tooltip>
       )}
+      <ExportForExcel className={classes.buttonExcel} encuestas={props.rows} />
     </Toolbar>
   );
 };
@@ -278,6 +280,12 @@ const useStyles = makeStyles((theme) => ({
     top: 20,
     width: 1,
   },
+  buttonExcel: {
+    position: "relative",
+    float: "right",
+    marginTop: 0
+
+  }
 }));
 
 export default function TableEncuestas(props) {
@@ -388,7 +396,8 @@ export default function TableEncuestas(props) {
 
       </div>
       <Paper className={classes.paper}>
-        <EnhancedTableToolbar numSelected={selected.length} deleteEncuestas={deleteEncuestas} selectedId={selectedId} setSelected={setSelected} />
+        <EnhancedTableToolbar numSelected={selected.length} deleteEncuestas={deleteEncuestas} selectedId={selectedId} setSelected={setSelected} rows={rows} />
+
         <TableContainer>
           <Table
             className={classes.table}
@@ -453,7 +462,7 @@ export default function TableEncuestas(props) {
                       <TableCell align="right">{row.n_razonempresa}</TableCell>
                       <TableCell align="right">{row.domicilio}</TableCell>
                       <TableCell align="right">{row.name}</TableCell>
-
+                      <TableCell align="right">{row.dni}</TableCell>
                     </TableRow>
                   );
                 })}

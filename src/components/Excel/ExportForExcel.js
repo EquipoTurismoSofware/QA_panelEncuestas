@@ -5,6 +5,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import Modal from '@material-ui/core/Modal';
 import Backdrop from '@material-ui/core/Backdrop';
 import Fade from '@material-ui/core/Fade';
+import Button from '@material-ui/core/Button';
+import { size } from "lodash"
 import firebase from 'firebase/app';
 import "firebase/firestore";
 import { firebaseApp } from "../../utils/firebase"
@@ -16,9 +18,10 @@ const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 
-export default function ExportForExcel() {
+export default function ExportForExcel(props) {
+    const { encuestas } = props
     const classes = useStyles();
-    const [encuestas, setEncuestas] = useState(null)
+    // const [encuestas, setEncuestas] = useState(null)
 
     const [open, setOpen] = React.useState(false);
 
@@ -29,26 +32,26 @@ export default function ExportForExcel() {
     const handleClose = () => {
         setOpen(false);
     };
-    useEffect(() => {
-        dbF.collection("encuestas").get().then((response) => {
-            const array = []
-            if (response.docs.length > 0) {
-                response.forEach((item) => {
-                    array.push(item.data())
-                })
-                setEncuestas(array)
-            }
-        })
-    }, [])
-    console.log(encuestas)
+    // useEffect(() => {
+    //     dbF.collection("encuestas").get().then((response) => {
+    //         const array = []
+    //         if (response.docs.length > 0) {
+    //             response.forEach((item) => {
+    //                 array.push(item.data())
+    //             })
+    //             setEncuestas(array)
+    //         }
+    //     })
+    // }, [])
+    console.log(size(encuestas))
 
 
 
     return (
         <div>
-            <button type="button" onClick={handleOpen}>
-                Descargar excel
-        </button>
+            <Button variant="contained" className={props.className} onClick={handleOpen} color="primary">
+                Descargar
+</Button>
             <Modal
                 aria-labelledby="transition-modal-title"
                 aria-describedby="transition-modal-description"
@@ -67,12 +70,13 @@ export default function ExportForExcel() {
 
 
                     <div className={classes.paper}>
-                        {!encuestas ? <div style={{ alignItems: "center", justifyContent: "center" }}> <ReactLoading type={"spin"} color={"#1B472D"} className={classes.loading} />
+                        {size(encuestas) === 0 ? <div style={{ alignItems: "center", justifyContent: "center" }}> <ReactLoading type={"spin"} color={"#1B472D"} className={classes.loading} />
                             <p>Cargando encuestas</p></div> : <div> <p>Encuestas cargadas</p></div>}
-                        {encuestas && open && <ExcelFile hideElement={true} element={<button onClick={handleOpen}>Descargar excel</button>} filename={"Encuestas"}>
+                        {encuestas && open && <ExcelFile hideElement={true} element={<button className={props.className} onClick={handleOpen}>Descargar excel</button>} filename={"Encuestas"}>
                             <ExcelSheet data={encuestas} name="Encuestas">
                                 <ExcelColumn widthPx={300} label="Fecha" value="fecha" />
                                 <ExcelColumn label="Encuestador" value="name" />
+                                <ExcelColumn label="DNI Encuestador" value="dni" />
                                 <ExcelColumn label="Localidad" value="localidad" />
                                 <ExcelColumn label="Nombre o razón social" value="n_razonempresa" />
                                 <ExcelColumn label="Nombre de fantasia " value="nombre_fantasia" />

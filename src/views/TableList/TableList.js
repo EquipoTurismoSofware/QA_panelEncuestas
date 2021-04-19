@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 // @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles";
 // core components
+
 import GridItem from "components/Grid/GridItem.js";
 import GridContainer from "components/Grid/GridContainer.js";
 import Card from "components/Card/Card.js";
@@ -87,7 +88,7 @@ export default function TableList() {
       data.forEach((enc) => {
         if (
           enc.nombre_fantasia.toLocaleUpperCase().includes(search.toLocaleUpperCase()) ||
-          enc.n_razonempresa.toLocaleUpperCase().includes(search.toLocaleUpperCase()) || enc.domicilio.toLocaleUpperCase().includes(search.toLocaleUpperCase()) || enc.name.toLocaleUpperCase().includes(search.toLocaleUpperCase())) {
+          enc.n_razonempresa.toLocaleUpperCase().includes(search.toLocaleUpperCase()) || enc.domicilio.toLocaleUpperCase().includes(search.toLocaleUpperCase()) || enc.name.toLocaleUpperCase().includes(search.toLocaleUpperCase()) || enc.dni.toLocaleUpperCase().includes(search.toLocaleLowerCase())) {
           rowArray.push(enc);
 
         }
