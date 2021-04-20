@@ -1,21 +1,24 @@
 import React, { useEffect, useState } from "react";
+import ReactExport from 'react-data-export';
 
-import ReactExport from "react-export-excel";
 import { makeStyles } from '@material-ui/core/styles';
 import Modal from '@material-ui/core/Modal';
 import Backdrop from '@material-ui/core/Backdrop';
 import Fade from '@material-ui/core/Fade';
 import Button from '@material-ui/core/Button';
 import { size } from "lodash"
+import moment from 'moment';
 import firebase from 'firebase/app';
 import "firebase/firestore";
 import { firebaseApp } from "../../utils/firebase"
 import ReactLoading from 'react-loading';
 const dbF = firebase.firestore(firebaseApp);
 
+
+
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+// const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 
 export default function ExportForExcel(props) {
@@ -32,20 +35,90 @@ export default function ExportForExcel(props) {
     const handleClose = () => {
         setOpen(false);
     };
-    // useEffect(() => {
-    //     dbF.collection("encuestas").get().then((response) => {
-    //         const array = []
-    //         if (response.docs.length > 0) {
-    //             response.forEach((item) => {
-    //                 array.push(item.data())
-    //             })
-    //             setEncuestas(array)
-    //         }
-    //     })
-    // }, [])
-    console.log(size(encuestas))
+    const styleColumnFecha = { border: { buttom: { style: 'thin', color: { rgb: '000000' } } }, fill: { patternType: "solid", fgColor: { rgb: "21E034" } }, font: { sz: "16", bold: true }, alignment: { horizontal: "center" } }
+    const styleColumnsGeneral = { font: { sz: "15", bold: true }, alignment: { horizontal: "left" } }
+    const styleCellGeneral = {
+        alignment: { horizontal: "left", wrapText: true },
+        border: { buttom: { style: 'dashed', color: { rgb: '091D62' } } }
+    }
+    const styleCellNumber = {
+        alignment: { horizontal: "right", wrapText: true },
+    }
+    console.log(styleCellGeneral)
+    const DataSet = [
+        {
+            columns: [
 
+                { title: "Fecha", style: styleColumnFecha, width: { wpx: 125 }, },
+                { title: "Encuestador", style: styleColumnsGeneral, width: { wch: 25 } },
+                { title: "DNI Encuestador", style: styleColumnsGeneral, width: { wch: 25 } },
+                { title: "Localidad", style: styleColumnsGeneral, width: { wch: 25 } },
+                { title: "Nombre o razón social", style: styleColumnsGeneral, width: { wch: 25 } },
+                { title: "Nombre de fantasia", style: styleColumnsGeneral, width: { wch: 25 } },
+                { title: "Tipo de establecimiento", style: styleColumnsGeneral, width: { wch: 25 } },
+                { title: "Año de inicio de actividad", style: styleColumnsGeneral, width: { wch: 27 } },
+                { title: "Calle", style: styleColumnsGeneral, width: { wch: 22 } },
+                { title: "Ruta", style: styleColumnsGeneral, width: { wch: 18 } },
+                { title: "Camino", style: styleColumnsGeneral, width: { wch: 18 } },
+                { title: "Número o km", style: styleColumnsGeneral, width: { wch: 18 } },
+                { title: "Latitud", style: styleColumnsGeneral, width: { wch: 22 } },
+                { title: "Longitud", style: styleColumnsGeneral, width: { wch: 22 } },
+                { title: "Telefono fijo", style: styleColumnsGeneral, width: { wch: 22 } },
+                { title: "Telefono celular", style: styleColumnsGeneral, width: { wch: 25 } },
+                { title: "Whatsapp", style: styleColumnsGeneral, width: { wch: 22 } },
+                { title: "Pagina Web", style: styleColumnsGeneral, width: { wch: 25 } },
+                { title: "Email", style: styleColumnsGeneral, width: { wch: 25 } },
+                { title: "Usuario en redes sociales", style: styleColumnsGeneral, width: { wch: 27 } },
+                { title: "Habitaciones", style: styleColumnsGeneral, width: { wch: 25 } },
+                { title: "Unidades (cabañas,deptos,etc)", style: styleColumnsGeneral, width: { wch: 30 } },
+                { title: "Plazas", style: styleColumnsGeneral, width: { wch: 18 } },
+                { title: "Prevee incorporar plazas,construcciones, etc?", style: styleColumnsGeneral, width: { wch: 25 } },
+                { title: "Restaurante/bar", style: styleColumnsGeneral, width: { wch: 22 } },
+                { title: "Servicios a la habitación", style: styleColumnsGeneral, width: { wch: 25 } },
+                { title: "Piscina", style: styleColumnsGeneral, width: { wch: 18 } },
+                { title: "Wifi", style: styleColumnsGeneral, width: { wch: 18 } },
+                { title: "Espacio para convenciones", style: styleColumnsGeneral, width: { wch: 28 } },
+                { title: "Otros", style: styleColumnsGeneral, width: { wch: 25 } }
+            ],
+            data: props.encuestas.map((data) => {
+                return [
+                    { value: moment(data.fecha).format('DD-MM-YYYY'), style: { fill: { fgColor: { rgb: "21E034" } }, alignment: { horizontal: "center" } } },
+                    { value: data.name, style: styleCellGeneral },
+                    { value: data.dni, style: styleCellNumber },
+                    { value: data.localidad, style: styleCellGeneral },
+                    { value: data.n_razonempresa, style: styleCellGeneral },
+                    { value: data.nombre_fantasia, style: styleCellGeneral },
+                    { value: data.inicioActividad, style: styleCellNumber },
+                    { value: data.calle, style: styleCellGeneral },
+                    { value: data.ruta != "" ? data.ruta : "-", style: { alignment: { horizontal: "center" } } },
+                    { value: data.camino != "" ? data.camino : "-", style: { alignment: { horizontal: "center" } } },
+                    { value: data.n_km != "" ? data.n_km : "-", style: styleCellNumber },
+                    { value: data.latitud, style: styleCellNumber },
+                    { value: data.longitud, style: styleCellNumber },
+                    { value: data.tel_fijo != "" ? data.tel_fijo : "-", style: styleCellNumber },
+                    { value: data.tel_celular, style: styleCellNumber },
+                    { value: data.wpp === 1 ? "Si" : "No", style: styleCellGeneral },
+                    { value: data.web != "" ? data.web : "-", style: styleCellGeneral },
+                    { value: data.email != "" ? data.email : "-", style: styleCellGeneral },
+                    { value: data.usario_redes != "" ? data.usario_redes : "-", style: styleCellGeneral },
+                    { value: data.habitaciones, style: styleCellNumber },
+                    { value: data.unidades, style: styleCellNumber },
+                    { value: data.n_plazas, style: styleCellNumber },
+                    { value: data.incorporacion, style: styleCellGeneral },
+                    { value: data.restaurante_bar, style: styleCellGeneral },
+                    { value: data.s_habitacion, style: styleCellGeneral },
+                    { value: data.piscina, style: styleCellGeneral },
+                    { value: data.wifi, style: styleCellGeneral },
+                    { value: data.esp_convenciones, style: styleCellGeneral },
+                    { value: data.otros != "" ? data.otros : "-", style: styleCellGeneral }
+                ]
+            })
+        }
+    ]
 
+    // console.log(size(encuestas))
+
+    console.log(DataSet)
 
     return (
         <div>
@@ -61,7 +134,7 @@ export default function ExportForExcel(props) {
                 closeAfterTransition
                 BackdropComponent={Backdrop}
                 BackdropProps={{
-                    timeout: 500,
+                    timeout: 250,
                 }}
             >
 
@@ -72,42 +145,29 @@ export default function ExportForExcel(props) {
                     <div className={classes.paper}>
                         {size(encuestas) === 0 ? <div style={{ alignItems: "center", justifyContent: "center" }}> <ReactLoading type={"spin"} color={"#1B472D"} className={classes.loading} />
                             <p>Cargando encuestas</p></div> : <div> <p>Encuestas cargadas</p></div>}
-                        {encuestas && open && <ExcelFile hideElement={true} element={<button className={props.className} onClick={handleOpen}>Descargar excel</button>} filename={"Encuestas"}>
-                            <ExcelSheet data={encuestas} name="Encuestas">
-                                <ExcelColumn widthPx={300} label="Fecha" value="fecha" />
-                                <ExcelColumn label="Encuestador" value="name" />
-                                <ExcelColumn label="DNI Encuestador" value="dni" />
-                                <ExcelColumn label="Localidad" value="localidad" />
-                                <ExcelColumn label="Nombre o razón social" value="n_razonempresa" />
-                                <ExcelColumn label="Nombre de fantasia " value="nombre_fantasia" />
-                                <ExcelColumn label="Tipo de establecimiento" value="tipo_establecimiento" />
-                                <ExcelColumn label="Año de inicio de actividad" value="inicioActividad" />
-                                <ExcelColumn label="Calle" value="calle" />
-                                <ExcelColumn label="Ruta" value={(col) => col.ruta != "" ? col.ruta : "-"} />
-                                <ExcelColumn label="Camino" value={(col) => col.camino != "" ? col.camino : "-"} />
-                                <ExcelColumn label="Numero o km" value={(col) => col.n_km != "" ? col.n_km : "-"} />
-                                <ExcelColumn label="Latitud" value="latitud" />
-                                <ExcelColumn label="Longitud" value="longitud" />
-                                <ExcelColumn label="Telefono fijo" value={(col) => col.tel_fijo != "" ? col.tel_fijo : "-"} />
-                                <ExcelColumn label="Telefono celular" value={(col) => col.tel_celular != "" ? col.tel_celular : "-"} />
-                                <ExcelColumn label="Wifi" value="wifi" />
-                                <ExcelColumn label="Página web" value="web" />
-                                <ExcelColumn label="Email" value="email" />
-                                <ExcelColumn label="Usuario en redes sociales" value="usuario_redes" />
-                                <ExcelColumn label="Habitaciones" value="habitaciones" />
-                                <ExcelColumn label="Unidades(cabañas,deptos, etc)" value="unidades" />
-                                <ExcelColumn label="Plazas" value="n_plazas" />
-                                <ExcelColumn label="Prevee incorporar plazas. construcciones, etc?" value="incorporacion" />
-                                <ExcelColumn label="Restaurante/bar" value="restaurante_bar" />
-                                <ExcelColumn label="Servicios a la habitación" value="s_habitacion" />
-                                <ExcelColumn label="piscina" value="piscina" />
-                                <ExcelColumn label="Wifi" value="wifi" />
-                                <ExcelColumn label="Espacio para convenciones" value="esp_convenciones" />
-                                <ExcelColumn label="Otros" value="otros" />
-                            </ExcelSheet>
+                        {encuestas && open &&
+                            // <ExcelFile
+                            //     filename="Encuestas 2021"
+                            //     hideElement={true}
+                            //     element={<button className={props.className} onClick={handleOpen}>Descargar excel</button>}>
+                            //     <ExcelSheet dataSet={DataSet} name="Encuestas 2021 Reporte" />
+                            // </ExcelFile>
+                            // <ExcelFile filename="Encuestas 2021" hideElement={true} element={<button className={props.className} onClick={handleOpen}>Descargar excel</button>} >
+                            //     <ExcelSheet dataSet={DataSet} name="Encuestas"/>
 
 
-                        </ExcelFile>}
+                            // </ExcelFile>
+                            <ExcelFile
+                                filename="Encuestas 2021"
+                                element={<button className={props.className} onClick={handleOpen}>Descargar excel</button>}
+                                hideElement={true}
+                            >
+
+                                <ExcelSheet dataSet={DataSet} name="Encuestas" />
+                            </ExcelFile>
+
+                        }
+
                     </div>
                 </Fade>
             </Modal>
