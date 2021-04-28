@@ -25,14 +25,14 @@ const dashboardRoutes = [
     icon: Dashboard,
     component: DashboardPage,
     layout: "/admin"
-  },
+  }/*,
   {
     path: "/user",
     name: "Perfil del Usuario",
     icon: Person,
     component: UserProfile,
     layout: "/admin"
-  },
+  }*/,
   {
     path: "/table",
     name: "Lista de Encuestas",
@@ -56,6 +56,7 @@ const dashboardRoutes = [
     component: Icons,
     layout: "/admin"
   },*/
+  /*
   {
     path: "/maps",
     name: "Mapas",
@@ -63,6 +64,7 @@ const dashboardRoutes = [
     component: Maps,
     layout: "/admin"
   },
+  */
   /*{
     path: "/notifications",
     name: "Notifications",

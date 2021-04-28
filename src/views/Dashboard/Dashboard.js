@@ -3,20 +3,11 @@ import firebase from 'firebase/app';
 import "firebase/firestore";
 import { firebaseApp } from "../../utils/firebase"
 import styles from "assets/jss/material-dashboard-react/views/dashboardStyle.js";
-// react plugin for creating charts
 import "./Dashboard.css"
-
 import { DataDashBoard, ActualizarDatos } from "../../components/Dashboard/DashboardList"
-// @material-ui/core
 import { makeStyles } from "@material-ui/core/styles";
-import Icon from "@material-ui/core/Icon";
-
-// @material-ui/icons
-
-// core components
 import GridItem from "components/Grid/GridItem.js";
 import GridContainer from "components/Grid/GridContainer.js";
-
 import Danger from "components/Typography/Danger.js";
 import Card from "components/Card/Card.js";
 import CardHeader from "components/Card/CardHeader.js";
@@ -24,79 +15,83 @@ import CardIcon from "components/Card/CardIcon.js";
 import CardFooter from "components/Card/CardFooter.js";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Carousel } from 'react-responsive-carousel';
-
-import { bugs, website, server } from "variables/general.js";
-
-import {
-  dailySalesChart,
-  emailsSubscriptionChart,
-  completedTasksChart
-} from "variables/charts.js";
-
+import Button from "components/CustomButtons/Button.js";
 
 const dbF = firebase.firestore(firebaseApp);
 
-
-
-
-
-
 const useStyles = makeStyles(styles);
-
-
-
-
-
-
 
 export default function Dashboard() {
   const [tipo_count, setTipo_Count] = useState(null)
   const [dataDash, setDataDash] = useState(null)
-
+  const [fechaAct, setFechaAct] = useState("")
   const classes = useStyles();
 
-  const estilos = misClases()
-  useEffect(() => {
+  const Update = () => {
     const tipo_cantidad = [];
+
     ActualizarDatos.then((response) => {
-      console.log(response)
-      // alert(response)
+      console.log("entro aca quinto")
+      let dia = new Date().getDate();
+      let mes = new Date().getMonth() +1;
+      let año = new Date().getFullYear();
+
+      let dato = {"fecha": `${dia}/${mes}/${año}`}
       dbF.collection("tipo_cantidad").get().then((response) => {
         response.forEach((doc) => {
-
           tipo_cantidad.push(doc.data())
-
         });
+
+        dbF.collection("fecha_actualizacion").doc("1").delete().then(() => {
+          dbF.collection("fecha_actualizacion").doc("1").set(dato)
+          .then(() => { 
+              setFechaAct(dato.fecha)
+          })
+          .catch((err) => {
+              return false
+          }); 
+        }).catch((err) => {
+            return false
+        })     
+        
 
         setTipo_Count(tipo_cantidad)
       })
 
     }).catch((error) => console.log(error))
     // CrearDatos()
+  } 
 
+  useEffect(() => {
+    const tipo_cantidad = [];
 
+    dbF.collection("tipo_cantidad").get().then((response) => {
+      response.forEach((doc) => {
+        tipo_cantidad.push(doc.data())
+      });
+      setTipo_Count(tipo_cantidad)
+    })
 
-
+    dbF.collection("fecha_actualizacion")
+    .get()
+    .then((response) => {
+      response.forEach((doc) => {
+        setFechaAct(doc.data().fecha)
+      });
+      
+    })
   }, [])
 
   useEffect(() => {
     if (tipo_count) {
       setDataDash(DataDashBoard(tipo_count))
     }
-
-
-
   }, [tipo_count])
-
-  // if (dataDash)
-  //   dataDash.map((items) => {
-  //     items.map((item) => {
-  //       console.log(item)
-  //     })
-  //   })
 
   return (
     <div>
+       <Button onClick={() => Update()}>Actualizar dashboard</Button> 
+       <span style={{marginLeft: 20}}>Ultima actualizacion:  {fechaAct} </span>
       {dataDash && <Carousel infiniteLoop={true} autoPlay={true} interval={2000} stopOnHover={true}>
 
         {
@@ -104,7 +99,7 @@ export default function Dashboard() {
             return <div>
               <GridContainer>
                 {items.map((item) => {
-                  return <GridItem xs={12} sm={6} md={3}>
+                  return <GridItem xs={12} sm={6} md={4}>
                     <Card>
                       <CardHeader color="warning" stats icon>
                         <CardIcon className={`${item.clase}`}>
@@ -130,16 +125,8 @@ export default function Dashboard() {
             </div>
           })
         }
-
-
-
-
-
-
-
-
       </Carousel>}
-
+     
     </div>
 
   );

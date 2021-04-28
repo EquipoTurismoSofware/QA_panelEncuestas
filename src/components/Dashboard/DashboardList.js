@@ -1,34 +1,13 @@
-import BusinessIcon from '@material-ui/icons/Business';
-import Warning from "@material-ui/icons/Warning";
-import ApartmentIcon from '@material-ui/icons/Apartment';
-import AccessibilityIcon from '@material-ui/icons/Accessibility';
-import GroupIcon from '@material-ui/icons/Group';
-import DeckIcon from '@material-ui/icons/Deck';
-import Icon from "@material-ui/core/Icon";
-import LocalHotelIcon from '@material-ui/icons/LocalHotel';
-import PetsIcon from '@material-ui/icons/Pets';
-import DesktopAccessDisabledIcon from '@material-ui/icons/DesktopAccessDisabled';
-import CasinoOutlinedIcon from '@material-ui/icons/CasinoOutlined';
-import KingBedOutlinedIcon from '@material-ui/icons/KingBedOutlined';
-import SingleBedOutlinedIcon from '@material-ui/icons/SingleBedOutlined';
-import LocalHotelOutlinedIcon from '@material-ui/icons/LocalHotelOutlined';
-import FastfoodOutlinedIcon from '@material-ui/icons/FastfoodOutlined';
-import AirlineSeatFlatOutlinedIcon from '@material-ui/icons/AirlineSeatFlatOutlined';
-import HomeWorkOutlinedIcon from '@material-ui/icons/HomeWorkOutlined';
-
-
+import { House ,Apartment, Pets, Accessibility, Group, Deck, Business, LocalHotel, CasinoOutlined, LocalHotelOutlined, DesktopAccessDisabled, KingBedOutlined, SingleBedOutlined, FastfoodOutlined, AirlineSeatFlatOutlined, HomeWorkOutlined} from '@material-ui/icons';
 import React from 'react'
-import { ItemsTipo2 } from "../Encuestas/items"
+import { ItemsTipo2, ItemsTipo } from "../Encuestas/items"
 import firebase from 'firebase/app';
 import "firebase/firestore";
 import { firebaseApp } from "../../utils/firebase"
 const dbF = firebase.firestore(firebaseApp);
 
-
 //hotel boutique
-const iconos = [<Icon>house_icon</Icon>, <BusinessIcon />, <ApartmentIcon />, <AccessibilityIcon />, <GroupIcon />, <DeckIcon />, <LocalHotelIcon />, <AccessibilityIcon />, <PetsIcon />, <DesktopAccessDisabledIcon />, <CasinoOutlinedIcon />, <KingBedOutlinedIcon />, <SingleBedOutlinedIcon />, <LocalHotelOutlinedIcon />, <FastfoodOutlinedIcon />, <CasinoOutlinedIcon />, <AirlineSeatFlatOutlinedIcon />, <HomeWorkOutlinedIcon />]
-
-const clases = ["cabaña", "hostel", "complejo", "hospedaje"]
+const iconos = [<House />, <Business />, <Apartment />, <Accessibility />, <Group />, <Deck />, <LocalHotel/>, <Accessibility/>, <Pets/>, <DesktopAccessDisabled />, <CasinoOutlined />, <KingBedOutlined/>, <SingleBedOutlined />, <LocalHotelOutlined />, <FastfoodOutlined />, <CasinoOutlined />, <AirlineSeatFlatOutlined />, <HomeWorkOutlined />]
 
 export const DataDashBoard = (tipo_cantidad) => {
     // deleteDatos()
@@ -48,61 +27,60 @@ export const DataDashBoard = (tipo_cantidad) => {
 
     while (cont < data.length) {
 
-        array.push(data.slice(cont, cont + 4))
-        cont = cont + 4
+        array.push(data.slice(cont, cont + 3))
+        cont = cont + 3
     }
     return array
 
 }
 
 export const ActualizarDatos = new Promise((resolve, reject) => {
-    let finish = true
+    console.log("entro aca primero")
     dbF
         .collection("tipo_cantidad")
         .get()
         .then((response) => {
+            var x = response.docs.length
+            console.log(x);
+            var cnt = 0;
+
             response.forEach((doc) => {
-                dbF.collection("tipo_cantidad").doc(doc.id).delete().then(() => { }).catch((err) => {
+                cnt++  
+                dbF.collection("tipo_cantidad").doc(doc.id).delete().then(() => { 
+                }).catch((err) => {
                     return false
-                })
+                })         
             })
+             
             var re = new RegExp('\\s', 'g');
-
-            ItemsTipo2.map((item, index) => {
-
+            console.log("entro aca segundo")
+            if(cnt == x){
+                ItemsTipo.map((item, index) => {
                 dbF
                     .collection("encuestas")
                     .where("tipo_establecimiento", "==", item)
                     .get()
                     .then((response) => {
-
+                        console.log("entro aca tercero")
                         let dato = { "tipo": item, "cantidad": response.docs.length, clase: `icon ${item.toLowerCase().replace(re, "-")}` }
                         dbF
                             .collection("tipo_cantidad")
                             .add(dato)
-                            .then(() => { })
+                            .then(() => { 
+                                console.log("entro aca cuarto")
+                            })
                             .catch((err) => {
                                 return false
                             });
 
                     })
                     .catch((err) => {
-
                         return false
                     }
-
-                    );
+                );
                 return false
-            })
-
-
-            // if (finish) {
-            //     resolve(finish)
-            // }
-            // else {
-            //     reject(finish)
-            // }
-
+                })
+            }     
         })
         .catch((err) => {
             return false
