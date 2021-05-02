@@ -1,3 +1,6 @@
+
+
+
 import React, { useEffect, useState } from "react";
 import ReactExport from 'react-data-export';
 
@@ -24,7 +27,7 @@ const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 export default function ExportForExcel(props) {
     const { encuestas } = props
     const classes = useStyles();
-    // const [encuestas, setEncuestas] = useState(null)
+
 
     const [open, setOpen] = React.useState(false);
 
@@ -44,14 +47,15 @@ export default function ExportForExcel(props) {
     const styleCellNumber = {
         alignment: { horizontal: "right", wrapText: true },
     }
-    console.log(styleCellGeneral)
+    
+   
     const DataSet = [
         {
             columns: [
 
                 { title: "Fecha", style: styleColumnFecha, width: { wpx: 125 }, },
                 { title: "Encuestador", style: styleColumnsGeneral, width: { wch: 25 } },
-                { title: "DNI Encuestador", style: styleColumnsGeneral, width: { wch: 25 } },
+                { title: "DNI Encuestador", style: styleColumnsGeneral, width: { wch: 20 } },
                 { title: "Localidad", style: styleColumnsGeneral, width: { wch: 25 } },
                 { title: "Nombre o razón social", style: styleColumnsGeneral, width: { wch: 25 } },
                 { title: "Nombre de fantasia", style: styleColumnsGeneral, width: { wch: 25 } },
@@ -61,22 +65,22 @@ export default function ExportForExcel(props) {
                 { title: "Ruta", style: styleColumnsGeneral, width: { wch: 18 } },
                 { title: "Camino", style: styleColumnsGeneral, width: { wch: 18 } },
                 { title: "Número o km", style: styleColumnsGeneral, width: { wch: 18 } },
-                { title: "Latitud", style: styleColumnsGeneral, width: { wch: 22 } },
-                { title: "Longitud", style: styleColumnsGeneral, width: { wch: 22 } },
+                { title: "Latitud", style: styleColumnsGeneral, width: { wch: 18 } },
+                { title: "Longitud", style: styleColumnsGeneral, width: { wch: 18 } },
                 { title: "Telefono fijo", style: styleColumnsGeneral, width: { wch: 22 } },
-                { title: "Telefono celular", style: styleColumnsGeneral, width: { wch: 25 } },
-                { title: "Whatsapp", style: styleColumnsGeneral, width: { wch: 22 } },
+                { title: "Telefono celular", style: styleColumnsGeneral, width: { wch: 20 } },
+                { title: "Whatsapp", style: styleColumnsGeneral, width: { wch: 20 } },
                 { title: "Pagina Web", style: styleColumnsGeneral, width: { wch: 25 } },
                 { title: "Email", style: styleColumnsGeneral, width: { wch: 25 } },
                 { title: "Usuario en redes sociales", style: styleColumnsGeneral, width: { wch: 27 } },
-                { title: "Habitaciones", style: styleColumnsGeneral, width: { wch: 25 } },
-                { title: "Unidades (cabañas,deptos,etc)", style: styleColumnsGeneral, width: { wch: 30 } },
-                { title: "Plazas", style: styleColumnsGeneral, width: { wch: 18 } },
-                { title: "Prevee incorporar plazas,construcciones, etc?", style: styleColumnsGeneral, width: { wch: 25 } },
-                { title: "Restaurante/bar", style: styleColumnsGeneral, width: { wch: 22 } },
+                { title: "Habitaciones", style: styleColumnsGeneral, width: { wch: 20 } },
+                { title: "Unidades (cabañas,deptos,etc)", style: styleColumnsGeneral, width: { wch: 32 } },
+                { title: "Plazas", style: styleColumnsGeneral, width: { wch: 15 } },
+                { title: "Prevee incorporar plazas,construcciones, etc?", style: styleColumnsGeneral, width: { wch: 50 } },
+                { title: "Restaurante/bar", style: styleColumnsGeneral, width: { wch: 20 } },
                 { title: "Servicios a la habitación", style: styleColumnsGeneral, width: { wch: 25 } },
-                { title: "Piscina", style: styleColumnsGeneral, width: { wch: 18 } },
-                { title: "Wifi", style: styleColumnsGeneral, width: { wch: 18 } },
+                { title: "Piscina", style: styleColumnsGeneral, width: { wch: 15 } },
+                { title: "Wifi", style: styleColumnsGeneral, width: { wch: 15 } },
                 { title: "Espacio para convenciones", style: styleColumnsGeneral, width: { wch: 28 } },
                 { title: "Otros", style: styleColumnsGeneral, width: { wch: 25 } }
             ],
@@ -88,6 +92,7 @@ export default function ExportForExcel(props) {
                     { value: data.localidad, style: styleCellGeneral },
                     { value: data.n_razonempresa, style: styleCellGeneral },
                     { value: data.nombre_fantasia, style: styleCellGeneral },
+                    { value: data.tipo_establecimiento, style: styleCellGeneral },
                     { value: data.inicioActividad, style: styleCellNumber },
                     { value: data.calle, style: styleCellGeneral },
                     { value: data.ruta != "" ? data.ruta : "-", style: { alignment: { horizontal: "center" } } },
@@ -116,13 +121,11 @@ export default function ExportForExcel(props) {
         }
     ]
 
-    // console.log(size(encuestas))
-
-    console.log(DataSet)
+ 
 
     return (
         <div>
-            <Button variant="contained" className={props.className} onClick={handleOpen} color="primary">
+                     <Button variant="contained" className={props.className} onClick={handleOpen} color="primary">
                 Descargar
 </Button>
             <Modal
@@ -145,7 +148,7 @@ export default function ExportForExcel(props) {
                     <div className={classes.paper}>
                         {size(encuestas) === 0 ? <div style={{ alignItems: "center", justifyContent: "center" }}> <ReactLoading type={"spin"} color={"#1B472D"} className={classes.loading} />
                             <p>Cargando encuestas</p></div> : <div> <p>Encuestas cargadas</p></div>}
-                        {encuestas && open &&
+                        {encuestas && open && 
                             // <ExcelFile
                             //     filename="Encuestas 2021"
                             //     hideElement={true}
@@ -175,7 +178,8 @@ export default function ExportForExcel(props) {
 
         </div>
 
-    );
+    )
+
 
 }
 
