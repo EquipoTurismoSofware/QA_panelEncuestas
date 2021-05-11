@@ -35,13 +35,13 @@ export const DataDashBoard = (tipo_cantidad) => {
 }
 
 export const ActualizarDatos = new Promise((resolve, reject) => {
-    console.log("entro aca primero")
+   
     dbF
         .collection("tipo_cantidad")
         .get()
         .then((response) => {
             var x = response.docs.length
-            console.log(x);
+         
             var cnt = 0;
 
             response.forEach((doc) => {
@@ -53,7 +53,7 @@ export const ActualizarDatos = new Promise((resolve, reject) => {
             })
              
             var re = new RegExp('\\s', 'g');
-            console.log("entro aca segundo")
+           
             if(cnt == x){
                 ItemsTipo.map((item, index) => {
                 dbF
@@ -61,13 +61,13 @@ export const ActualizarDatos = new Promise((resolve, reject) => {
                     .where("tipo_establecimiento", "==", item)
                     .get()
                     .then((response) => {
-                        console.log("entro aca tercero")
+                        
                         let dato = { "tipo": item, "cantidad": response.docs.length, clase: `icon ${item.toLowerCase().replace(re, "-")}` }
                         dbF
                             .collection("tipo_cantidad")
                             .add(dato)
                             .then(() => { 
-                                console.log("entro aca cuarto")
+                                
                             })
                             .catch((err) => {
                                 return false
